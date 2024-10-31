@@ -4,7 +4,7 @@
 function createPlayer(name, symbol, turn = true) {
 
     function toggleTurn() {
-        turn = !turn
+        this.turn = !this.turn
     }
     return { name, symbol, turn, toggleTurn }
 }
@@ -70,27 +70,30 @@ function createGame() {
       }
 
     function playRound(ix, iy) {
-
-        console.log(gameBoard.getBoard());
-        
-
         if (round > maxRound) {
             console.log('game ended')
             return
         }
-        if (players[0].turn) {
+        if (players[0].turn === true) {
+            console.log(players[0].name + players[0].symbol + players[0].turn);
+            
             gameBoard.drawMark(ix, iy, players[0].symbol)
             round++
             checkWinner(players[0], gameBoard)
             players[0].toggleTurn()
             players[1].toggleTurn()
         } else {
+            console.log(players[1].name + players[1].symbol + players[1].turn);
             gameBoard.drawMark(ix, iy, players[1].symbol)
             round++
             checkWinner(players[1], gameBoard)
             players[1].toggleTurn()
             players[0].toggleTurn()
         }
+
+        gameBoard.getBoard().forEach(row => {
+            console.log(row);       
+    })
     }
 
     return { checkWinner, playRound}
