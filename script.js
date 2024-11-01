@@ -21,7 +21,7 @@ function createBoard() {
     function drawMark(ix, iy, symbol) {
         if (boardArray[iy][ix] !== null) {
             console.log('Impossible')
-            return
+            return 1
         }
         boardArray[iy][ix] = symbol
     }
@@ -46,6 +46,11 @@ function createDisplay() {
         const maxRound = 9
         const gameBoard = createBoard()
         const players = [createPlayer('playerX', 'x'), createPlayer('playerO', 'o', false)]
+
+        const playerxWins = document.getElementById('player1-wins')
+        const playeroWins = document.getElementById('player2-wins')
+        const draw = document.getElementById('draw')
+
     
     
         function checkWinner(player, gameBoard) {
@@ -65,33 +70,49 @@ function createDisplay() {
           
             for (const combination of winningCombinations) {
               if (combination.every(([x, y]) => gameBoard.getCase(x, y) === player.symbol)) {
-                alert(player.name + ' WINS');
-                round = maxRound
+                if (player.symbol === 'x') {
+                    playerxWins.textContent = Number(playerxWins.textContent) + 1
+                } else {
+                    playeroWins.textContent = Number(playeroWins.textContent) + 1
+                }
                 return true;
               }
             }
             return false;
           }
-    
-        function playRound(ix, iy) {
+
+        function checkDraw() {
             if (round === maxRound) {
-                alert("DRAW")
+                draw.textContent = Number(draw.textContent) + 1
                 return
             }
+        }
+    
+        function playRound(ix, iy) {
+            checkDraw()
             if (players[0].turn === true) {
-                
-                gameBoard.drawMark(ix, iy, players[0].symbol)
+                if (gameBoard.drawMark(ix, iy, players[0].symbol) === 1) {
+                    return
+                }
                 round++
-                checkWinner(players[0], gameBoard)
+                if (checkWinner(players[0], gameBoard) === true) {
+                    return
+                }
+                checkDraw()
                 players[0].toggleTurn()
                 players[1].toggleTurn()
             } else {
                 console.log(players[1].name + players[1].symbol + players[1].turn);
-                gameBoard.drawMark(ix, iy, players[1].symbol)
+                if (gameBoard.drawMark(ix, iy, players[1].symbol) === 1) {
+                    return
+                }
                 round++
-                checkWinner(players[1], gameBoard)
+                if (checkWinner(players[1], gameBoard) === true) {
+                    return
+                }
                 players[1].toggleTurn()
                 players[0].toggleTurn()
+                checkDraw()
             }
     
             gameBoard.getBoard().forEach(row => {
@@ -107,7 +128,11 @@ function createDisplay() {
     idArray.forEach(id => {
         const box = document.getElementById(id)
         box.innerHTML = ''
+        // Remove old event listeners to prevent duplicates
+        const newBox = box.cloneNode(true)
+        box.parentNode.replaceChild(newBox, box)
     })
+
     
     idArray.forEach(id => {
         document.getElementById(id).addEventListener('click', () => {
@@ -153,9 +178,34 @@ function createDisplay() {
 //     newGame.playRound(Number(x), Number(y))
 // }
 
-const startButton = document.querySelector('button')
+const startButton = document.querySelector('#newGame')
 startButton.addEventListener('click', () => {
     createDisplay()
 })
+
+const resetButton = document.querySelector('#reset')
+resetButton.addEventListener('click', () => {
+    location.reload()
+})
+
+// create new game when a win or a draw is registred
+
+const infoElem = document.querySelector('.info-container');
+const observer = new MutationObserver((mutations) => {
+  console.log('Mutations detected:', mutations);
+  mutations.forEach((mutation) => {
+    console.log('Mutation type:', mutation.type);
+    if (mutation.type === 'childList' || mutation.type === 'characterData') {
+      console.log('Calling createDisplay...');
+      createDisplay();
+    }
+  });
+});
+
+observer.observe(infoElem, {
+  childList: true,
+  characterData: true,
+  subtree: true
+});
 
 

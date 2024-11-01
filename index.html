@@ -12,8 +12,24 @@
         <h1>oTicTacToe</h1>
     </header>
     <main>
+        <div class="info-container">
+            <div class="player-info">
+                <div>Player 1</div>
+                <div>X</div>
+                <div>wins : <span id="player1-wins">0</span></div>
+            </div>
+            <div class="draw-info">
+                <div>Draw : <span id="draw">0</span></div>
+            </div>
+            <div class="player-info">
+                <div>Player 2</div>
+                <div>O</div>
+                <div>wins : <span id="player2-wins">0</span></div>
+            </div>
+        </div>
         <div>
-            <button>New Game</button>
+            <button id="newGame">New Game</button>
+            <button id="reset">Reset</button>
         </div>
         <div class="display">
             <div class="row">
